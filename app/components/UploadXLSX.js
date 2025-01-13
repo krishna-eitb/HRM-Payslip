@@ -10,6 +10,7 @@ const UploadXLSX = () => {
   const [file, setFile] = useState(null);
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
+  const [previewData, setPreviewData] = useState(null);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -69,7 +70,7 @@ const UploadXLSX = () => {
     // Title Section: Payslip
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0); // Black text
-    doc.text(`Payslip - ${user["Employee Name"]}`, 14, 40);
+    doc.text(`Payslip - ${user["employee name"]}`, 14, 40);
 
     // Date Section
     doc.setFontSize(12);
@@ -86,12 +87,11 @@ const UploadXLSX = () => {
     doc.setTextColor(0, 0, 0); // Black text
     doc.text(`Employee Name: ${user["employee name"]}`, 20, 75);
     doc.text(`Employee ID: ${user["employee id"]}`, 100, 75);
-    doc.text(`Email: ${user["email"]}`, 100, 85);
-    doc.text(`Designation: ${user["Designation"]}`, 20, 85);
-    doc.text(`Days Worked: ${user["Days Worked"]}`, 100, 85);
-    doc.text(`Salary Month: ${user["Salary Month"]}`, 20, 95);
-    doc.text(`Paid Leaves: ${user["Paid Leaves"]}`, 100, 95);
-    doc.text(`Type of Employment: ${user["Type of Employment"]}`, 20, 105);
+    doc.text(`Email: ${user["email"]}`, 20, 85);
+    doc.text(`Designation: ${user["designation"]}`, 100, 85);
+    doc.text(`Days Worked: ${user["Days Worked"]}`, 20, 95);
+    doc.text(`Salary Month: ${user["Salary Month"]}`, 100, 95);
+    doc.text(`Paid Leaves: ${user["Paid Leaves"]}`, 20, 105);
     doc.text(`Loss of Pay: ${user["Loss of Pay"]}`, 100, 105);
 
     // Add a horizontal divider between sections
@@ -151,15 +151,7 @@ const UploadXLSX = () => {
     doc.setFontSize(14);
     doc.text(`Net Pay: ₹${netPay.toFixed(2)}`, 14, yOffset);
 
-    // Payment Date Section
-    doc.text(
-      `Payment Date: ${new Date().toLocaleDateString()}`,
-      14,
-      yOffset + 10
-    );
-
     addFooter(doc); // Add footer with company info
-
 
     return doc;
   };
@@ -217,6 +209,11 @@ const UploadXLSX = () => {
     doc.save(`${user["employee name"]}.pdf`);
   };
 
+  const handlePreviewUser = (user) => {
+    const doc = generatePayslipPDF(user);
+    setPreviewData(doc.output("datauristring"));
+  };
+
   return (
     <div className="py-[100px] border-t-2">
       <h3 className="font-mono text-3xl mb-8 font-semibold mr-10">
@@ -258,6 +255,12 @@ const UploadXLSX = () => {
                 >
                   Send Email
                 </button>
+                <button
+                  className="bg-gray-600 text-white rounded-full px-4 p-2 font-mono font-semibold ml-4"
+                  onClick={() => handlePreviewUser(user)}
+                >
+                  Preview
+                </button>
               </li>
             ))}
           </ul>
@@ -274,6 +277,26 @@ const UploadXLSX = () => {
             Send All Emails
           </button>
         </div>
+      )}
+
+{previewData && (
+       <div className={`preview-modal fixed inset-0 z-50 flex items-center justify-center ${previewData ? "block" : "hidden"}`}>
+       <div className="overlay fixed inset-0 bg-black bg-opacity-50"></div>
+       <div className="modal-content bg-white rounded-lg shadow-lg p-6 relative w-4/5 max-w-3xl">
+         <iframe
+           src={previewData}
+           className="w-full h-[500px] border border-gray-200"
+           title="PDF Preview"
+         ></iframe>
+         <button
+           className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+           onClick={() => setPreviewData(null)}
+         >
+           Close
+         </button>
+       </div>
+     </div>
+     
       )}
     </div>
   );
