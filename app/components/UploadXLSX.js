@@ -268,7 +268,7 @@ const UploadXLSX = () => {
             Download All Payslips
           </button>
           <button
-            className="mt-4 bg-secondary font-mono text-xl text-white px-4 py-2 rounded-full hover:border-solid border-2 hover:border-secondary hover:bg-white hover:text-slate-400"
+            className="mt-4 ml-[40px] font-mono border-primary text-black text-xl  px-4 py-2 rounded-full hover:border-solid border-2 hover:border-primary  hover:bg-primary hover:text-white"
             onClick={handleSendEmailAll}
           >
             Send All Emails
